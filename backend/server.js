@@ -10,7 +10,6 @@ const connectDB = require("./config/db");
 
 const app = express();
 const server = http.createServer(app);
-const server = http.createServer(app);
 
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
