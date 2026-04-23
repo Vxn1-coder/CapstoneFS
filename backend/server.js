@@ -9,22 +9,35 @@ const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 
 const app = express();
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 connectDB();
 
-
-app.use(
-  cors({
-   origin: [
+const allowedOrigins = [
   "http://localhost:3000",
-  process.env.FRONTEND_URL
-],
-    credentials: true,
-  })
-);
+  "https://capstone-fs-4tt6.vercel.app",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS not allowed for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -34,15 +47,11 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/items", require("./routes/itemRoutes"));
 app.use("/api/messages", require("./routes/messageRoutes"));
 
-
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      process.env.FRONTEND_URL
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true, 
+    credentials: true,
   },
 });
 
@@ -62,8 +71,8 @@ io.on("connection", (socket) => {
   });
 });
 
-
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log("Allowed origins:", allowedOrigins);
+});
