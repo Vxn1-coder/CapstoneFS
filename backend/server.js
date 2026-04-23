@@ -18,7 +18,6 @@ connectDB();
 
 // ✅ Allowed origins (add your production + local)
 const allowedOrigins = [
-  "http://localhost:3000",
   process.env.FRONTEND_URL, // your Vercel deployed URL
 ];
 
