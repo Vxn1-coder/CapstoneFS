@@ -10,6 +10,7 @@ const connectDB = require("./config/db");
 
 const app = express();
 const server = http.createServer(app);
+const server = http.createServer(app);
 
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
@@ -69,6 +70,7 @@ const io = new Server(server, {
     },
     methods: ["GET", "POST"],
     credentials: true,
+    credentials: true,
   },
 });
 
@@ -94,6 +96,7 @@ console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log("Allowed origins:", allowedOrigins);
+});
